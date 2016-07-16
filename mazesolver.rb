@@ -4,7 +4,8 @@ require './treenode'
 
 class MazeSolver
   attr_reader :end_position
-  def initialize(filename)
+  def initialize(filename, use_dfs = true)
+    @use_dfs = true
     lines = File.readlines(filename).map(&:chomp).map
     @maze = lines.map{ |l| l.split("")}
     @start_position = coord_of_start_end(@maze, "S")
@@ -98,7 +99,8 @@ class MazeSolver
       abort
     end
 
-    trace_path_back(@start_node.bfs(end_pos))
+    return trace_path_back(@start_node.dfs(end_pos)) if @use_dfs
+    return trace_path_back(@start_node.bfs(end_pos)) unless @use_dfs
 
     #returns an array path
   end
