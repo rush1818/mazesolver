@@ -19,7 +19,7 @@ class MazeSolver
     @maze.each do |row|
       p row.join("  ")
     end
-    p "                   "
+    #p "                   "
 
   end
   def [](pos)
@@ -91,7 +91,12 @@ class MazeSolver
   def find_path(end_pos)
     populate_available_position_nodes
     # @visited_positions.each
-    trace_path_back(@start_node.dfs(end_pos))
+    if @position_nodes.none?{|node| node.value == @end_position}  #if no paths exist the stop early
+      p "No paths available"
+      abort
+    end
+
+    trace_path_back(@start_node.bfs(end_pos))
 
     #returns an array path
   end
