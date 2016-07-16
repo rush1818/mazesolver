@@ -1,7 +1,7 @@
 require 'byebug'
 require './treenode'
 class MazeSolver
-  attr_reader :maze, :seen_positions
+  attr_reader :end_position
   def initialize(filename)
     lines = File.readlines(filename).map(&:chomp).map
     @maze = lines.map{ |l| l.split("")}
@@ -10,8 +10,18 @@ class MazeSolver
     @end_position = coord_of_start_end(@maze, "E")
     @seen_positions = []
     @position_nodes = [@start_node]
+    render
   end
 
+  def render
+    sleep(0.1)
+    system('clear')
+    @maze.each do |row|
+      p row.join("  ")
+    end
+    p "                   "
+
+  end
   def [](pos)
     r, c = pos
     @maze[r][c]
@@ -78,8 +88,35 @@ class MazeSolver
 
   end
 
-  def build_tree
+  def find_path(end_pos)
+    populate_available_position_nodes
+    # @visited_positions.each
+    trace_path_back(@start_node.dfs(end_pos))
 
+    #returns an array path
+  end
+  def trace_path_back(target_node)
+    path = []
+
+    if target_node.parent.nil?
+      path << target_node.value
+    elsif target_node.parent != @start_position
+      path << target_node.value
+      path.concat(trace_path_back(target_node.parent))
+    else
+      path << target_node.parent
+    end
+
+    path
+  end
+
+
+  def solve
+    path = find_path(@end_position).reverse
+    path.each do |pos|
+      self[pos] = "o" unless self[pos] == "E" || self[pos] == "S"
+      render
+    end
   end
 
 
@@ -88,33 +125,14 @@ end
 
 
 
-p "*" * 15
-m = MazeSolver.new('maze1.txt')
-# p m.in_maze?([-1, -1])
-# p m.in_maze?([100, 100])
-# p m.in_maze?([5, 5])
-# p m.row_count
-# p m.col_count
-# p m.in_maze?([8, 16])
-# p m.in_maze?([7, 16])
-# p m.in_maze?([7, 15])
-p "*" * 15
-p "adjacent_positions"
-# p m.find_adjacent([2,3])
-p m.populate_available_position_nodes
-p m.seen_positions
 
-=begin
 
 if __FILE__ == $PROGRAM_NAME
   if ARGV.empty?
-    puts "Enter file name as maze1.txt"
-    file = gets.chomp
-    game = MazeSolver.new(file)
-    game.play
+    game = MazeSolver.new('maze1.txt')
+    game.solve
   else
     game = MazeSolver.new(ARGV[0])
-    game.play
+    game.solve
   end
 end
-=end
