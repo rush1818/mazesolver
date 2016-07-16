@@ -1,5 +1,7 @@
 require 'byebug'
+require 'colorize'
 require './treenode'
+
 class MazeSolver
   attr_reader :end_position
   def initialize(filename)
@@ -17,7 +19,7 @@ class MazeSolver
     sleep(0.1)
     system('clear')
     @maze.each do |row|
-      p row.join("  ")
+      puts row.join("  ")
     end
     #p "                   "
 
@@ -92,7 +94,7 @@ class MazeSolver
     populate_available_position_nodes
     # @visited_positions.each
     if @position_nodes.none?{|node| node.value == @end_position}  #if no paths exist the stop early
-      p "No paths available"
+      puts "No paths available".colorize(:color => :white, :background => :red)
       abort
     end
 
@@ -119,7 +121,7 @@ class MazeSolver
   def solve
     path = find_path(@end_position).reverse
     path.each do |pos|
-      self[pos] = "o" unless self[pos] == "E" || self[pos] == "S"
+      self[pos] = "o".colorize(:color => :light_blue) unless self[pos] == "E" || self[pos] == "S"
       render
     end
   end
