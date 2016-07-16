@@ -1,11 +1,12 @@
+require 'byebug'
 class MazeSolver
-  attr_reader :maze
+  attr_reader :maze, :seen_positions
   def initialize(filename)
     lines = File.readlines(filename).map(&:chomp).map
     @maze = lines.map{ |l| l.split("")}
     @start_position = coord_of_start_end(@maze, "S")
     @end_position = coord_of_start_end(@maze, "E")
-    @available_moves = []
+    @seen_positions = []
   end
 
   def [](pos)
@@ -49,7 +50,31 @@ class MazeSolver
     [row, col]
   end
 
+  def find_adjacent(pos)
+    # byebug
+    directions = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+    adjacent_positions = directions.map{|dir| [dir[0]+pos[0], dir[1]+pos[1]] }
+    adjacent_positions.select{|new_pos| !is_wall?(new_pos) && in_maze?(new_pos)}
+  end
+
+  def populate_available_positions
+    #populates all positions from START that are empty using BFS
+    queue = [@start_position]
+    until queue.empty?
+      current_position = queue.shift
+      adjacent_positions = find_adjacent(current_position)
+      adjacent_positions.reject! { |pos| @seen_positions.include?(pos) }
+      @seen_positions.concat(adjacent_positions)
+      queue.concat(adjacent_positions)
+    end
+
+  end
+
+
+
 end
+
+
 
 =begin
 
