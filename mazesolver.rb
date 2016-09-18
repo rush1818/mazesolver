@@ -141,7 +141,7 @@ if __FILE__ == $PROGRAM_NAME
     game = MazeSolver.new('maze1.txt')
     game.solve
   else
-    game = MazeSolver.new(ARGV[0])
+    game = MazeSolver.new(ARGV[0], ARGV[1])
     game.solve
   end
 end
